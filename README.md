@@ -21,6 +21,16 @@ _**Success Criteria**_
 **5. Average Load Factor:** Calculate a 3-flight movind average of passenger counts using _AVG() OVER_
 
 **2. Database Schema Design**
+The database for this project is designed to handle the core logistics of RwandAir’s flight operations. It consists of three normalized, related tables designed to ensure data integrity through the use of Primary and Foreign Keys.
+
+**RA_AIRCRAFT:** Stores the details of the fleet, including the specific model and total passenger capacity for each aircraft.
+
+**RA_ROUTES:** Contains the flight network information, defining origins, destinations, and the base pricing for each route.
+
+
+**RA_FLIGHTS:** The central transactional table that logs individual flight instances, linking specific aircraft to specific routes and recording performance metrics like passenger counts, revenue, and delay minutes.
+
+The following Entity Relationship Diagram (ERD) illustrates the "one-to-many" relationships between these entities, where one route or aircraft can be associated with multiple flight logs.
 ![ERD Diagram](schema_erd.png)
 
 **Part A: SQL JOINS Implementation**
@@ -32,7 +42,7 @@ SELECT f.flight_id, r.destination, a.model, f.revenue
 FROM RA_FLIGHTS f
 INNER JOIN RA_ROUTES r ON f.route_id = r.route_id
 INNER JOIN RA_AIRCRAFT a ON f.aircraft_id = a.aircraft_id;
-![INNER JOIN RESULT](INNER JOIN.png)
+![INNER JOIN RESULT](INNER_JOIN.png)
 
 **. Business Interpretation:** This query identifies our active operations by filtering out any incomplete records. It confirms that our high-revenue routes such as Dubai are correctly paired with high-capacity aircraft like the Airbus A330.
 
@@ -43,7 +53,7 @@ SELECT r.destination, f.flight_id
 FROM RA_ROUTES r
 LEFT JOIN RA_FLIGHTS f ON r.route_id = f.route_id
 WHERE f.flight_id IS NULL;
-![LEFT JOIN Result](LEFT JOIN.png)
+![LEFT JOIN Result](LEFT_JOIN.png)
 
 **. Business Interpretation:** This helps us detect "Ghost Routes" destinations we are authorized to fly to (like London) but haven't scheduled yet. This vital for market expansion planning.
 
@@ -56,7 +66,7 @@ SELECT a.model, f.flight_id
 FROM RA_FLIGHTS f
 RIGHT JOIN RA_AIRCRAFT a ON f.aircraft_id = a.aircraft_id
 WHERE f.flight_id IS NULL;
-![RIGHT JOIN Result](RIGHT JOIN.png)
+![RIGHT JOIN Result](RIGHT_JOIN.png)
 
 **. Interpretation:** This shows which planes are sitting idle in the hangar. For a logistics company like Rwandair, this helps identity underutilized assets that aren't generating revenue.
 
@@ -68,7 +78,7 @@ Goal: Compare all routes and flights, including unmatched records.
 SELECT r.destination, f.flight_id, f.revenue
 FROM RA_ROUTES r
 FULL OUTER JOIN RA_FLIGHTS f ON r.route_id = f.route_id;
-![FULL OUTER JOIN Result](FULL OUTER JOIN.png)
+![FULL OUTER JOIN Result](FULL_OUTER_JOIN.png)
 
 **. Interpretation:** This gives a 360-degree view of the department. It lists every destination we support alongside every flight record, highlighting gaps in our schedule.
 
@@ -81,7 +91,7 @@ SELECT f1.flight_id AS Flight_1, f2.flight_id AS Flight_2, f1.passengers_booked,
 FROM RA_FLIGHTS f1
 JOIN RA_FLIGHTS f2 ON f1.route_id = f2.route_id
 WHERE f1.flight_id < f2.flight_id;
-![SELF JOIN Result](SELF JOIN.png)
+![SELF JOIN Result](SELF_JOIN.png)
 
 **. Interpretation:** This allows us to compare passenger loads for the same destination on different dates. it helps us see if a specific route (like Nairobi) is getting more or less popular over time.
 
@@ -103,7 +113,7 @@ SELECT flight_id, flight_date, passengers_booked,
        SUM(passengers_booked) OVER (ORDER BY flight_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as running_total_passengers,
        AVG(passengers_booked) OVER (ORDER BY flight_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as three_flight_moving_avg
 FROM RA_FLIGHTS;
-![SUM and AVG Result](SUM, AVG.png)
+![SUM and AVG Result](SUM_AVG.png)
 
 **. Business Interpretation:** This tracks the cumulative growth of our passenger base over time. It allows management to see if we are hitting monthly volume targets.
 
@@ -115,7 +125,7 @@ SELECT flight_id, route_id, passengers_booked,
        LAG(passengers_booked) OVER (PARTITION BY route_id ORDER BY flight_date) as prev_flight_passengers,
        passengers_booked - LAG(passengers_booked) OVER (PARTITION BY route_id ORDER BY flight_date)
 FROM RA_FLIGHTS;
-![LAG & LEAD Result](LAG, LEAD.png)
+![LAG & LEAD Result](LAG_LEAD.png)
 
 **. Interpretation:** This is how we calculate growth. By "looking back" at the previous flight using LAG() , we can see exactly how many more (or fewer) passengers we had compared to last time.
 
