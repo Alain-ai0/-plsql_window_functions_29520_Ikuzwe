@@ -9,17 +9,14 @@
 - **Expected Outcome:** This analysis will help Rwandair decide which routes need more flights and identify underperforming schedules that require operational changes.
 
 ---
-### _**Success Criteria**_
-
-**1. Top Destinations:** Identify the Top 3 destinations by total passenger revenue using `RANK()`.
-
-**2. Monthly Revenue Trend:** Calculate the running total of revenue for the year using `SUM()` `OVER()`.
-
-**3. Growth Analytics:** Compare this month's passenger count to last month's using `LAG()`.
-
-**4. Flight performance Tiers:** Divide flights into 4 "Efficiency Quartiles" based on delay times using `NTILE(4)`.
-
-**5. Average Load Factor:** Calculate a 3-flight moving average of passenger counts using `AVG()` `OVER()`
+### Success Criteria
+| Goal | SQL Function | Business Value for RwandAir |
+| :--- | :--- | :--- |
+| **Top Destinations** | `RANK()` | Identifies the top 3 highest-earning routes to prioritize marketing and resource allocation. |
+| **Revenue Trends** | `SUM() OVER()` | Tracks the cumulative running total of revenue to see if the airline is meeting its monthly financial targets. |
+| **Growth Analytics** | `LAG()` | Measures the specific passenger growth between consecutive flights to detect rising or falling demand. |
+| **Performance Tiers** | `NTILE(4)` | Segments flights into four efficiency quartiles based on delays to identify which schedules need operational review. |
+| **Smoothing Trends** | `AVG() OVER()` | Uses a 3-flight moving average to smooth out "one-off" empty flights and see the true booking trend. |
 
 ---
 ## **2. Database Schema Design**
