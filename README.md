@@ -19,7 +19,7 @@
 
 **4. Flight performance Tiers:** Divide flights into 4 "Efficiency Quartiles" based on delay times using `NTILE(4)`.
 
-**5. Average Load Factor:** Calculate a 3-flight movind average of passenger counts using `AVG()` `OVER()`
+**5. Average Load Factor:** Calculate a 3-flight moving average of passenger counts using `AVG()` `OVER()`
 
 ---
 ## **2. Database Schema Design**
